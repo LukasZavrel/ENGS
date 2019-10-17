@@ -5,6 +5,7 @@ from werkzeug.utils import secure_filename
 import numpy as np
 import pandas as pd
 import zipfile
+import logging
 
 path = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(path,'uploads')
@@ -93,6 +94,7 @@ def zpracuj_data(file_path):
 
 	file_names = ['01', '21', '31']
 	delete_content(app.config['TEMP_FOLDER'])
+	logging.warning('Inside of the function')
 	for i in range(3):
 		data = data_tuple[i].copy()
 		data.rename(columns={ data.columns[3]: "Castka", data.columns[4]: "Firma", data.columns[5]: "Smlouva", data.columns[6]: "Mena"}, inplace = True)
@@ -150,9 +152,15 @@ def upload_file():
 			print(app)
 			filename = secure_filename(file.filename)
 			delete_content(app.config['UPLOAD_FOLDER'])
+			logging.warning('File upload started')
 			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+			logging.warning('File has been uploaded')
 			flash('File successfully uploaded')
-			zpracuj_data(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+			try:
+				zpracuj_data(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+			except Exception as e:
+				logging.error(f'{e} raised an error')	
+				logging.error("Exception occurred", exc_info=True)	
 			return redirect('/')
 		else:
 			flash('Allowed file types are xlsx')
