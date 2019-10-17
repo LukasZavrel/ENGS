@@ -7,8 +7,6 @@ import pandas as pd
 import zipfile
 import logging
 
-import time
-
 path = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(path,'uploads')
 DOWNLOAD_FOLDER = os.path.join(path,'downloads')
@@ -33,7 +31,6 @@ def allowed_file(filename):
 	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def zpracuj_data(file_path):
-	time.sleep( 29 )
 	# Mesic pro ktery se operace provadi
 	month = file_path[-12:-5]
 	xls = pd.ExcelFile(file_path)
@@ -164,6 +161,7 @@ def upload_file():
 			except Exception as e:
 				logging.error(f'{e} raised an error')	
 				logging.error("Exception occurred", exc_info=True)	
+			logging.warning('After function termination')
 			return redirect('/')
 		else:
 			flash('Allowed file types are xlsx')
